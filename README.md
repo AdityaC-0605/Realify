@@ -55,24 +55,6 @@ pip install -r requirements.txt
 
 ## 🚀 Usage
 
-### ✅ Train the Model
-
-```bash
-python train.py
-```
-
-### 🔍 Predict on Custom Input
-
-```bash
-python predict.py --title "Some news headline" --text "Full article content goes here"
-```
-
-### 🌐 Classify Google News Articles
-
-```bash
-python fetch_and_classify.py --query "elections 2024"
-```
-
 ---
 
 ## 🧪 Example Output
