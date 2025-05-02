@@ -107,5 +107,3 @@ pip install -r requirements.txt
 * [SerpAPI](https://serpapi.com/) for Google News search integration
 
 ---
-
-Would you like a `fetch_and_classify.py` script created to match this README?
