@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-time Fake News Detection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f4f6f8 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 48px auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(60,60,120,0.10), 0 1.5px 6px rgba(60,60,120,0.06);
+            padding: 40px 28px 32px 28px;
+            backdrop-filter: blur(2px);
+        }
+        h1 {
+            text-align: center;
+            color: #2d3a4b;
+            margin-bottom: 36px;
+            letter-spacing: 1px;
+            font-size: 2.4em;
+            font-weight: 700;
+        }
+        .headline-card {
+            background: #f7faff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(80,120,200,0.07);
+            margin-bottom: 28px;
+            padding: 26px 22px 18px 22px;
+            transition: box-shadow 0.25s, transform 0.18s;
+            border-left: 6px solid #7c3aed;
+            animation: fadeIn 0.7s;
+        }
+        .headline-card:hover {
+            box-shadow: 0 8px 24px rgba(80,120,200,0.13);
+            transform: translateY(-3px) scale(1.01);
+        }
+        .headline {
+            font-weight: 700;
+            color: #1a2233;
+            margin-bottom: 14px;
+            font-size: 1.18em;
+            letter-spacing: 0.2px;
+        }
+        .predictions {
+            margin-top: 10px;
+        }
+        .prediction {
+            display: inline-block;
+            margin-right: 18px;
+            margin-bottom: 6px;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            box-shadow: 0 1px 4px rgba(60,60,120,0.04);
+            border: 1.5px solid transparent;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+        }
+        .Fake\ News {
+            background: #ffeaea;
+            color: #d32f2f;
+            border-color: #f8bcbc;
+        }
+        .Not\ A\ Fake\ News {
+            background: #eaffea;
+            color: #388e3c;
+            border-color: #b8e6b8;
+        }
+        .prediction:hover {
+            filter: brightness(0.97);
+            box-shadow: 0 2px 8px rgba(60,60,120,0.09);
+        }
+        @media (max-width: 700px) {
+            .container { padding: 12px 2vw; }
+            h1 { font-size: 1.5em; }
+            .headline-card { padding: 16px 8px 12px 12px; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Real-time Fake News Detection</h1>
+        <!-- User Input Form -->
+        <form method="POST" action="/" style="margin-bottom:32px;">
+            <label for="user_news" style="font-weight:500; color:#2d3a4b; font-size:1.1em;">Enter a news headline or text to analyze:</label>
+            <textarea id="user_news" name="user_news" rows="3" style="width:100%; margin-top:10px; border-radius:8px; border:1.5px solid #bfc9d9; padding:10px; font-size:1em; resize:vertical;" required>{{ user_news or '' }}</textarea>
+            <button type="submit" style="margin-top:12px; background:#7c3aed; color:#fff; border:none; border-radius:8px; padding:10px 28px; font-size:1.1em; font-weight:600; cursor:pointer; box-shadow:0 2px 8px rgba(124,58,237,0.08); transition:background 0.2s;">Analyze</button>
+        </form>
+        {% if user_prediction %}
+            <div class="headline-card" style="border-left:6px solid #22c55e;">
+                <div class="headline">Your Input: {{ user_news }}</div>
+                <div class="predictions">
+                    {% for model, pred in user_prediction.items() %}
+                        <span class="prediction {{ pred }}">{{ model }}: {{ pred }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        <!-- Real-time Headlines -->
+        {% for item in predictions %}
+            <div class="headline-card">
+                <div class="headline">{{ item['headline'] }}</div>
+                <div class="predictions">
+                    {% for model, pred in item.items() %}
+                        {% if model != 'headline' %}
+                            <span class="prediction {{ pred }}">{{ model }}: {{ pred }}</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
