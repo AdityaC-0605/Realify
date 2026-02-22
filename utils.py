@@ -14,5 +14,6 @@ def wordopt(text):
 def output_lable(n):
     if n == 0:
         return "Fake News"
-    elif n == 1:
+    if n == 1:
         return "Not A Fake News"
+    return "Unknown"

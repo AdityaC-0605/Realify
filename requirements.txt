@@ -1,4 +1,13 @@
 flask
+fastapi
+uvicorn
+scikit-learn
+pandas
+numpy
+requests
+pydantic
+python-multipart
+python-dotenv
 torch
 transformers
 accelerate
