@@ -1,37 +1,54 @@
-import requests
-import pickle
-import pandas as pd
 import os
+import pickle
+from pathlib import Path
+
+import requests
 from utils import wordopt, output_lable
 
 # --- CONFIG ---
-SERPAPI_API_KEY = '0dc53a995f4ff0486f34f00b949f1f4932861c12a7da9922adfe7e023318c6d1'  # <-- Replace with your SerpApi key
-SERPAPI_URL = f'https://serpapi.com/search.json?engine=google_news&q=latest+news&api_key={SERPAPI_API_KEY}'
-# Model and vectorizer paths (assumes they are in the current directory)
+SERPAPI_API_KEY = os.getenv("SERPAPI_KEY", "")
+SERPAPI_URL = "https://serpapi.com/search.json"
+BASE_DIR = Path(__file__).resolve().parent
+
+# Model and vectorizer paths
 MODEL_PATHS = {
-    'LR': 'lr_model.pkl',
-    'DT': 'dt_model.pkl',
-    'GB': 'gb_model.pkl',
-    'RF': 'rf_model.pkl',
+    "LR": BASE_DIR / "lr_model.pkl",
+    "DT": BASE_DIR / "dt_model.pkl",
+    "GB": BASE_DIR / "gb_model.pkl",
+    "RF": BASE_DIR / "rf_model.pkl",
 }
-VECTORIZER_PATH = 'vectorizer.pkl'
+VECTORIZER_PATH = BASE_DIR / "vectorizer.pkl"
 
 # --- LOAD MODELS ---
 def load_models_and_vectorizer():
     models = {}
     for name, path in MODEL_PATHS.items():
-        if os.path.exists(path):
-            models[name] = pickle.load(open(path, 'rb'))
+        if path.exists():
+            with path.open("rb") as f:
+                models[name] = pickle.load(f)
         else:
             print(f"Warning: Model {name} not found at {path}")
-    if not os.path.exists(VECTORIZER_PATH):
+    if not VECTORIZER_PATH.exists():
         raise FileNotFoundError(f"Vectorizer not found at {VECTORIZER_PATH}")
-    vectorizer = pickle.load(open(VECTORIZER_PATH, 'rb'))
+    with VECTORIZER_PATH.open("rb") as f:
+        vectorizer = pickle.load(f)
     return models, vectorizer
 
 # --- FETCH NEWS ---
 def fetch_headlines():
-    response = requests.get(SERPAPI_URL)
+    if not SERPAPI_API_KEY:
+        raise RuntimeError("SERPAPI_KEY is not set")
+
+    response = requests.get(
+        SERPAPI_URL,
+        params={
+            "engine": "google_news",
+            "q": "latest news",
+            "api_key": SERPAPI_API_KEY,
+        },
+        timeout=10,
+    )
+    response.raise_for_status()
     data = response.json()
     if 'news_results' not in data:
         raise Exception(f"SerpApi error: {data.get('error', 'No news_results found')}")
